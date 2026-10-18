@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steal an Russia Egg Drop - Halloween Event</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        spooky: {
+                            bg: '#0b0612',
+                            card: '#160d27',
+                            cardBorder: '#2d184c',
+                            orange: '#ff6600',
+                            purple: '#8b5cf6',
+                            green: '#22c55e',
+                            gold: '#eab308'
+                        }
+                    },
+                    fontFamily: {
+                        spooky: ['Creepster', 'cursive'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0612;
+            color: #e2e8f0;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 102, 0, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(15, 8, 28, 0.8) 0%, #0b0612 100%);
+        }
+
+        .title-glow {
+            font-family: 'Creepster', cursive;
+            text-shadow: 0 0 10px #ff6600, 0 0 20px #ff6600, 0 0 40px #8b5cf6;
+        }
+
+        .box-glow-orange {
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.25);
+        }
+        .box-glow-orange:hover {
+            box-shadow: 0 0 30px rgba(255, 102, 0, 0.5);
+        }
+
+        .box-glow-purple {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+        }
+        .box-glow-purple:hover {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Roulette Reel Styling */
+        .roulette-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 160px;
+        }
+        .roulette-pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: #ff6600;
+            box-shadow: 0 0 15px #ff6600, 0 0 5px #ffffff;
+            z-index: 20;
+        }
+        .roulette-track {
+            display: flex;
+            position: absolute;
+            left: 0;
+            top: 10px;
+            height: 140px;
+            will-change: transform;
+            transition: transform 0s cubic-bezier(0.15, 0.9, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0612;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d184c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff6600;
+        }
+
+        /* Float animation for pumpkins/elements */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-spooky-orange selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-spooky-card/90 backdrop-blur-md border-b border-spooky-cardBorder px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo / Title -->
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-jack-o-lantern text-3xl text-spooky-orange animate-float"></i>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-wider text-spooky-orange title-glow">
+                    Steal an Russia Egg Drop
+                </h1>
+            </div>
+
+            <!-- Halloween Event Timer Countdown -->
+            <div class="flex items-center gap-2 bg-spooky-bg/80 border border-spooky-orange/40 px-3 py-1.5 rounded-full text-xs sm:text-sm">
+                <i class="fa-solid fa-clock text-spooky-orange animate-pulse"></i>
+                <span>До конца Хэллоуина:</span>
+                <span id="event-timer" class="font-bold text-spooky-orange">20 дн. 00:00:00</span>
+            </div>
+
+            <!-- User Balance & Profile Info -->
+            <div class="flex items-center gap-4">
+                <!-- Currencies Display -->
+                <div class="flex items-center gap-3 bg-spooky-bg border border-spooky-cardBorder px-3 py-1.5 rounded-xl">
+                    <!-- Pumpkins -->
+                    <div class="flex items-center gap-1.5" title="Тыквы (Хэллоуин)">
+                        <i class="fa-solid fa-pumpkin text-spooky-orange text-lg"></i>
+                        <span id="balance-pumpkins" class="font-bold text-sm sm:text-base text-spooky-orange">0</span>
+                    </div>
+                    <div class="h-4 w-[1px] bg-spooky-cardBorder"></div>
+                    <!-- Crystals -->
+                    <div class="flex items-center gap-1.5" title="Кристаллы (Постоянные)">
+                        <i class="fa-solid fa-gem text-cyan-400 text-lg"></i>
+                        <span id="balance-crystals" class="font-bold text-sm sm:text-base text-cyan-400">0</span>
+                    </div>
+                    <!-- Add Balance / Bonus Button -->
+                    <button onclick="openBonusModal()" class="ml-1 text-xs bg-spooky-orange/20 hover:bg-spooky-orange/40 text-spooky-orange border border-spooky-orange/50 px-2 py-1 rounded-lg transition" title="Получить ещё валюты">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Account Area -->
+                <div id="user-profile-area" class="flex items-center gap-2">
+                    <!-- Dynamic rendering: Auth Buttons or Username -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full space-y-10">
+
+        <!-- Top Banner / Daily Free Case Section -->
+        <section class="relative rounded-2xl bg-gradient-to-r from-purple-900/40 via-spooky-card to-orange-950/40 border border-spooky-cardBorder p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden shadow-2xl">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none text-9xl text-spooky-orange">
+                <i class="fa-solid fa-ghost"></i>
+            </div>
+            
+            <div class="space-y-2 text-center md:text-left z-10">
+                <div class="inline-block px-3 py-1 bg-spooky-green/20 border border-spooky-green/40 text-spooky-green text-xs font-bold rounded-full uppercase tracking-wider">
+                    <i class="fa-solid fa-gift mr-1"></i> Ежедневный Бонус
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">ФРИ КЕЙС / БЕСПЛАТНЫЙ ДРОП</h2>
+                <p class="text-gray-400 text-sm max-w-lg">
+                    Заходи каждый день и забирай бесплатный кейс! В нем могут выпасть Тыквы, Кристаллы или случайное Хэллоуинское Яйцо!
+                </p>
+            </div>
+
+            <div class="z-10 flex flex-col items-center gap-2">
+                <button id="btn-claim-free" onclick="openCase('free')" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold rounded-xl shadow-lg shadow-green-900/40 transform hover:-translate-y-0.5 active:translate-y-0 transition flex items-center gap-2">
+                    <i class="fa-solid fa-box-open text-xl"></i>
+                    <span>ОТКРЫТЬ ФРИ КЕЙС</span>
+                </button>
+                <span id="free-case-timer-status" class="text-xs text-gray-400">Доступно прямо сейчас!</span>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs / Inventory Bar -->
+        <div class="flex items-center justify-between border-b border-spooky-cardBorder pb-4">
+            <h3 class="text-xl font-bold flex items-center gap-2 text-white">
+                <i class="fa-solid fa-boxes-stacked text-spooky-orange"></i>
+                Кейсы и Магазин
+            </h3>
+            <button onclick="openInventoryModal()" class="px-4 py-2 bg-spooky-card hover:bg-spooky-cardBorder border border-spooky-cardBorder text-gray-200 hover:text-white rounded-xl text-sm font-semibold transition flex items-center gap-2">
+                <i class="fa-solid fa-shield-cat text-spooky-purple"></i>
+                Мой Инвентарь
+                <span id="inventory-count-badge" class="bg-spooky-purple text-white text-xs px-2 py-0.5 rounded-full">0</span>
+            </button>
+        </div>
+
+        <!-- CASES CATEGORY 1: Halloween Pumpkin Cases -->
+        <section class="space-y-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-pumpkin text-spooky-orange text-xl"></i>
+                <h3 class="text-lg font-bold text-spooky-orange uppercase tracking-wide">Хэллоуин Кейсы (За Тыквы)</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Case 1: fuse Хэллоуин -->
+                <div class="bg-spooky-card border border-spooky-cardBorder hover:border-spooky-orange/60 rounded-2xl p-5 flex flex-col justify-between items-center text-center transition box-glow-orange group">
+                    <div class="space-y-3 w-full">
+                        <div class="text-xs text-spooky-orange font-semibold bg-spooky-orange/10 border border-spooky-orange/20 rounded-lg py-1">Ивент Кейс</div>
+                        <h4 class="text-xl font-extrabold text-white group-hover:text-spooky-orange transition">fuse Хэллоуин</h4>
+                        <div class="relative py-4 flex justify-center">
+                            <div class="w-28 h-28 bg-orange-950/30 rounded-2xl flex items-center justify-center border border-spooky-orange/30 group-hover:scale-105 transition duration-300">
+                                <i class="fa-solid fa-fire text-5xl text-spooky-orange animate-pulse"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Содержит обычные и редкие хэллоуинские яйца</p>
+                    </div>
+                    
+                    <div class="mt-6 w-full space-y-3">
+                        <div class="text-xs text-gray-400">Шанс: Демоническое Яйцо (5%)</div>
+                        <button onclick="openCase('fuse_halloween')" class="w-full py-2.5 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-orange-950/50">
+                            <span>10</span>
+                            <i class="fa-solid fa-pumpkin"></i>
+                            <span>Открыть</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Case 2: Кейс Демона -->
+                <div class="bg-spooky-card border border-spooky-cardBorder hover:border-spooky-orange/60 rounded-2xl p-5 flex flex-col justify-between items-center text-center transition box-glow-orange group">
+                    <div class="space-y-3 w-full">
+                        <div class="text-xs text-red-400 font-semibold bg-red-950/30 border border-red-500/20 rounded-lg py-1">Демонический</div>
+                        <h4 class="text-xl font-extrabold text-white group-hover:text-red-400 transition">Кейс Демона</h4>
+                        <div class="relative py-4 flex justify-center">
+                            <div class="w-28 h-28 bg-red-950/30 rounded-2xl flex items-center justify-center border border-red-500/30 group-hover:scale-105 transition duration-300">
+                                <i class="fa-solid fa-skull text-5xl text-red-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Повышенный шанс на яйцо Дьявола и Тыквенного Короля</p>
+                    </div>
+                    
+                    <div class="mt-6 w-full space-y-3">
+                        <div class="text-xs text-gray-400">Шанс: Egg of Doom (10%)</div>
+                        <button onclick="openCase('demon_case')" class="w-full py-2.5 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-orange-950/50">
+                            <span>20</span>
+                            <i class="fa-solid fa-pumpkin"></i>
+                            <span>Открыть</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Case 3: Кейс Злой Тыквы -->
+                <div class="bg-spooky-card border border-spooky-cardBorder hover:border-spooky-orange/60 rounded-2xl p-5 flex flex-col justify-between items-center text-center transition box-glow-orange group">
+                    <div class="space-y-3 w-full">
+                        <div class="text-xs text-yellow-400 font-semibold bg-yellow-950/30 border border-yellow-500/20 rounded-lg py-1">Легендарный Ивент</div>
+                        <h4 class="text-xl font-extrabold text-white group-hover:text-yellow-400 transition">Кейс Злой Тыквы</h4>
+                        <div class="relative py-4 flex justify-center">
+                            <div class="w-28 h-28 bg-yellow-950/30 rounded-2xl flex items-center justify-center border border-yellow-500/30 group-hover:scale-105 transition duration-300">
+                                <i class="fa-solid fa-ghost text-5xl text-yellow-500 animate-bounce"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Топовый кейс хэллоуина с топовыми Egg Drop предметами</p>
+                    </div>
+                    
+                    <div class="mt-6 w-full space-y-3">
+                        <div class="text-xs text-gray-400">Шанс: Pumpkin King Egg (15%)</div>
+                        <button onclick="openCase('evil_pumpkin')" class="w-full py-2.5 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-orange-950/50">
+                            <span>30</span>
+                            <i class="fa-solid fa-pumpkin"></i>
+                            <span>Открыть</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CASES CATEGORY 2: Permanent Crystal Cases -->
+        <section class="space-y-4 pt-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-gem text-cyan-400 text-xl"></i>
+                <h3 class="text-lg font-bold text-cyan-400 uppercase tracking-wide">Постоянные Кейсы (За Кристаллы)</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <!-- Case 1: Кейс Родомитса -->
+                <div class="bg-spooky-card border border-spooky-cardBorder hover:border-cyan-500/60 rounded-2xl p-5 flex flex-col justify-between items-center text-center transition box-glow-purple group">
+                    <div class="space-y-3 w-full">
+                        <div class="text-xs text-cyan-300 font-semibold bg-cyan-950/30 border border-cyan-500/20 rounded-lg py-1">Бюджетный</div>
+                        <h4 class="text-xl font-extrabold text-white group-hover:text-cyan-400 transition">Кейс Родомитса</h4>
+                        <div class="relative py-4 flex justify-center">
+                            <div class="w-28 h-28 bg-cyan-950/30 rounded-2xl flex items-center justify-center border border-cyan-500/30 group-hover:scale-105 transition duration-300">
+                                <i class="fa-solid fa-[#00ffff] fa-egg text-5xl text-cyan-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Быстрый окупаемый кейс за доступные кристаллы</p>
+                    </div>
+                    
+                    <div class="mt-6 w-full space-y-3">
+                        <div class="text-xs text-gray-400">Шанс: Rhodomite Egg (12%)</div>
+                        <button onclick="openCase('rhodomite_case')" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50">
+                            <span>10</span>
+                            <i class="fa-solid fa-gem"></i>
+                            <span>Открыть</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Case 2: Кейс Сунты -->
+                <div class="bg-spooky-card border border-spooky-cardBorder hover:border-purple-500/60 rounded-2xl p-5 flex flex-col justify-between items-center text-center transition box-glow-purple group">
+                    <div class="space-y-3 w-full">
+                        <div class="text-xs text-purple-300 font-semibold bg-purple-950/30 border border-purple-500/20 rounded-lg py-1">Премиум Хайролл</div>
+                        <h4 class="text-xl font-extrabold text-white group-hover:text-purple-400 transition">Кейс Сунты</h4>
+                        <div class="relative py-4 flex justify-center">
+                            <div class="w-28 h-28 bg-purple-950/30 rounded-2xl flex items-center justify-center border border-purple-500/30 group-hover:scale-105 transition duration-300">
+                                <i class="fa-solid fa-crown text-5xl text-purple-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Эксклюзивный кейс с мифическими яйцами высшей категории</p>
+                    </div>
+                    
+                    <div class="mt-6 w-full space-y-3">
+                        <div class="text-xs text-gray-400">Шанс: Egg of Sunta (25%)</div>
+                        <button onclick="openCase('sunta_case')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50">
+                            <span>150</span>
+                            <i class="fa-solid fa-gem"></i>
+                            <span>Открыть</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-spooky-cardBorder bg-spooky-card/50 py-6 text-center text-xs text-gray-500 mt-12">
+        <p>© 2026 Steal an Russia Egg Drop. Игровой симулятор открытия кейсов.</p>
+        <p class="mt-1">Все совпадения и предметы являются виртуальными игровыми предметами.</p>
+    </footer>
+
+    <!-- MODAL 1: AUTHENTICATION (Login / Registration) -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-spooky-card border border-spooky-cardBorder w-full max-w-md rounded-2xl p-6 shadow-2xl relative space-y-6">
+            <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Modal Header Tabs -->
+            <div class="flex border-b border-spooky-cardBorder">
+                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center font-bold border-b-2 border-spooky-orange text-spooky-orange">
+                    Вход
+                </button>
+                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center font-bold border-b-2 border-transparent text-gray-400 hover:text-white">
+                    Регистрация
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Никнейм</label>
+                    <input type="text" id="login-username" required class="w-full bg-spooky-bg border border-spooky-cardBorder rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-spooky-orange text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Пароль</label>
+                    <input type="password" id="login-password" required class="w-full bg-spooky-bg border border-spooky-cardBorder rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-spooky-orange text-sm">
+                </div>
+                <div id="login-error" class="text-xs text-red-500 hidden"></div>
+                <button type="submit" class="w-full py-3 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition">
+                    Войти в аккаунт
+                </button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Придумайте Никнейм</label>
+                    <input type="text" id="reg-username" required class="w-full bg-spooky-bg border border-spooky-cardBorder rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-spooky-orange text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Придумайте Пароль</label>
+                    <input type="password" id="reg-password" required class="w-full bg-spooky-bg border border-spooky-cardBorder rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-spooky-orange text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Повторите Пароль</label>
+                    <input type="password" id="reg-confirm-password" required class="w-full bg-spooky-bg border border-spooky-cardBorder rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-spooky-orange text-sm">
+                </div>
+                <div id="reg-error" class="text-xs text-red-500 hidden"></div>
+                <button type="submit" class="w-full py-3 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition">
+                    Зарегистрироваться
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: CASE OPENING ROULETTE MODAL -->
+    <div id="roulette-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-spooky-card border border-spooky-cardBorder w-full max-w-3xl rounded-2xl p-6 shadow-2xl relative flex flex-col items-center space-y-6">
+            <button id="btn-close-roulette" onclick="closeRouletteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white z-30">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+
+            <!-- Case Title Banner -->
+            <div class="text-center space-y-1">
+                <span class="text-xs uppercase tracking-widest text-spooky-orange font-bold">Открытие кейса</span>
+                <h3 id="roulette-case-title" class="text-2xl font-extrabold text-white">Название Кейса</h3>
+            </div>
+
+            <!-- ROULETTE CONTAINER -->
+            <div class="w-full bg-spooky-bg border-y-2 border-spooky-orange/50 roulette-container my-4 rounded-xl">
+                <div class="roulette-pointer"></div>
+                <div id="roulette-track" class="roulette-track">
+                    <!-- Items generated via JS -->
+                </div>
+            </div>
+
+            <!-- WIN REVEAL AREA -->
+            <div id="roulette-result-area" class="text-center space-y-3 opacity-0 transition duration-500 transform scale-90">
+                <div class="text-xs text-gray-400 font-semibold uppercase">Вы выиграли:</div>
+                <div id="won-item-name" class="text-2xl font-black text-spooky-orange">Имя Предмета</div>
+                <div id="won-item-value" class="text-sm text-gray-300">Ценность: 0</div>
+                <button onclick="closeRouletteModal()" class="mt-2 px-8 py-2.5 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl transition shadow-lg">
+                    Забрать в Инвентарь
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: INVENTORY MODAL -->
+    <div id="inventory-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-spooky-card border border-spooky-cardBorder w-full max-w-4xl rounded-2xl p-6 shadow-2xl relative space-y-6 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-spooky-cardBorder pb-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-box-archive text-spooky-orange text-xl"></i>
+                    <h3 class="text-xl font-bold text-white">Мой Инвентарь Drop Egg</h3>
+                </div>
+                <button onclick="closeModal('inventory-modal')" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Inventory Grid -->
+            <div id="inventory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 overflow-y-auto p-1 flex-1">
+                <!-- Items injected here -->
+            </div>
+
+            <div class="text-right border-t border-spooky-cardBorder pt-4">
+                <span class="text-xs text-gray-400">Вы можете продавать выпавшие яйца за валюту!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: TOP UP / BONUS MODAL -->
+    <div id="bonus-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-spooky-card border border-spooky-cardBorder w-full max-w-md rounded-2xl p-6 shadow-2xl relative space-y-6">
+            <button onclick="closeModal('bonus-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-4xl text-spooky-orange"></i>
+                <h3 class="text-2xl font-bold text-white">Пополнить Валюту</h3>
+                <p class="text-xs text-gray-400">Симуляция бесплатного пополнения тыкв и кристаллов для тестирования!</p>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="addCurrency(50, 0)" class="w-full py-3 bg-spooky-orange/20 border border-spooky-orange/50 hover:bg-spooky-orange/40 text-spooky-orange font-bold rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pumpkin"></i> +50 Тыкв
+                </button>
+                <button onclick="addCurrency(0, 100)" class="w-full py-3 bg-cyan-950/40 border border-cyan-500/50 hover:bg-cyan-900/40 text-cyan-400 font-bold rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-gem"></i> +100 Кристаллов
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC & APPLICATION SCRIPT -->
+    <script>
+        /* ==========================================================================
+           1. DATA STRUCTURES & CONFIGURATION
+           ========================================================================== */
+        
+        // Item Rarity Colors
+        const RARITY_COLORS = {
+            common: { bg: 'bg-gray-800', border: 'border-gray-600', text: 'text-gray-300', name: 'Обычное' },
+            rare: { bg: 'bg-blue-950', border: 'border-blue-500', text: 'text-blue-400', name: 'Редкое' },
+            epic: { bg: 'bg-purple-950', border: 'border-purple-500', text: 'text-purple-400', name: 'Эпическое' },
+            legendary: { bg: 'bg-amber-950', border: 'border-amber-500', text: 'text-amber-400', name: 'Легендарное' },
+            mythic: { bg: 'bg-red-950', border: 'border-red-600', text: 'text-red-500', name: 'Мифическое' }
+        };
+
+        // All Drop Items Definitions
+        const ALL_ITEMS = {
+            egg_common: { id: 'egg_common', name: 'Russia Basic Egg', rarity: 'common', icon: 'fa-egg', color: '#9ca3af', price: 5, currency: 'pumpkins' },
+            egg_spooky: { id: 'egg_spooky', name: 'Spooky Pumpkin Egg', rarity: 'rare', icon: 'fa-jack-o-lantern', color: '#f97316', price: 10, currency: 'pumpkins' },
+            egg_demon: { id: 'egg_demon', name: 'Demon Egg', rarity: 'epic', icon: 'fa-skull', color: '#ef4444', price: 25, currency: 'pumpkins' },
+            egg_doom: { id: 'egg_doom', name: 'Egg of Doom', rarity: 'legendary', icon: 'fa-ghost', color: '#eab308', price: 50, currency: 'pumpkins' },
+            egg_king: { id: 'egg_king', name: 'Pumpkin King Egg', rarity: 'mythic', icon: 'fa-crown', color: '#ff6600', price: 100, currency: 'pumpkins' },
+            
+            egg_rhodomite: { id: 'egg_rhodomite', name: 'Rhodomite Egg', rarity: 'rare', icon: 'fa-gem', color: '#06b6d4', price: 10, currency: 'crystals' },
+            egg_gold: { id: 'egg_gold', name: 'Golden Egg Drop', rarity: 'epic', icon: 'fa-coins', color: '#eab308', price: 30, currency: 'crystals' },
+            egg_sunta: { id: 'egg_sunta', name: 'Egg of Sunta', rarity: 'mythic', icon: 'fa-dragon', color: '#a855f7', price: 150, currency: 'crystals' }
+        };
+
+        // Cases Definitions
+        const CASES = {
+            free: {
+                id: 'free',
+                name: 'Ежедневный Фри Кейс',
+                costType: 'free',
+                cost: 0,
+                pool: [ALL_ITEMS.egg_common, ALL_ITEMS.egg_spooky, ALL_ITEMS.egg_rhodomite]
+            },
+            fuse_halloween: {
+                id: 'fuse_halloween',
+                name: 'fuse Хэллоуин',
+                costType: 'pumpkins',
+                cost: 10,
+                pool: [ALL_ITEMS.egg_common, ALL_ITEMS.egg_spooky, ALL_ITEMS.egg_demon]
+            },
+            demon_case: {
+                id: 'demon_case',
+                name: 'Кейс Демона',
+                costType: 'pumpkins',
+                cost: 20,
+                pool: [ALL_ITEMS.egg_spooky, ALL_ITEMS.egg_demon, ALL_ITEMS.egg_doom]
+            },
+            evil_pumpkin: {
+                id: 'evil_pumpkin',
+                name: 'Кейс Злой Тыквы',
+                costType: 'pumpkins',
+                cost: 30,
+                pool: [ALL_ITEMS.egg_demon, ALL_ITEMS.egg_doom, ALL_ITEMS.egg_king]
+            },
+            rhodomite_case: {
+                id: 'rhodomite_case',
+                name: 'Кейс Родомитса',
+                costType: 'crystals',
+                cost: 10,
+                pool: [ALL_ITEMS.egg_rhodomite, ALL_ITEMS.egg_gold]
+            },
+            sunta_case: {
+                id: 'sunta_case',
+                name: 'Кейс Сунты',
+                costType: 'crystals',
+                cost: 150,
+                pool: [ALL_ITEMS.egg_gold, ALL_ITEMS.egg_sunta]
+            }
+        };
+
+        /* ==========================================================================
+           2. STATE & LOCALSTORAGE MANAGEMENT
+           ========================================================================== */
+        
+        let currentUser = null;
+        let isSpinning = false;
+
+        // Load active user or session on launch
+        window.onload = function() {
+            initEventTimer();
+            loadUserData();
+            updateUI();
+            checkFreeCaseAvailability();
+        };
+
+        function getUserStorageKey(username) {
+            return `egg_drop_user_${username.toLowerCase()}`;
+        }
+
+        function loadUserData() {
+            const activeUsername = localStorage.getItem('egg_drop_active_session');
+            if (activeUsername) {
+                const rawData = localStorage.getItem(getUserStorageKey(activeUsername));
+                if (rawData) {
+                    currentUser = JSON.parse(rawData);
+                } else {
+                    createDefaultUser(activeUsername);
+                }
+            } else {
+                // Default guest user profile if not logged in
+                currentUser = null;
+            }
+        }
+
+        function createDefaultUser(username) {
+            currentUser = {
+                username: username,
+                pumpkins: 30, // Welcome bonus
+                crystals: 50,  // Welcome bonus
+                inventory: [],
+                lastFreeClaim: 0
+            };
+            saveUserData();
+        }
+
+        function saveUserData() {
+            if (currentUser) {
+                localStorage.setItem(getUserStorageKey(currentUser.username), JSON.stringify(currentUser));
+            }
+        }
+
+        /* ==========================================================================
+           3. AUDIO SYNTHESIZER (WEB AUDIO API)
+           ========================================================================== */
+        
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'tick') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.04);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.04);
+                } else if (type === 'win') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch(e) {
+                // Audio forbidden without user interaction
+            }
+        }
+
+        /* ==========================================================================
+           4. AUTHENTICATION & PROFILE LOGIC
+           ========================================================================== */
+        
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                loginBtn.className = "flex-1 py-3 text-center font-bold border-b-2 border-spooky-orange text-spooky-orange";
+                regBtn.className = "flex-1 py-3 text-center font-bold border-b-2 border-transparent text-gray-400 hover:text-white";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                regBtn.className = "flex-1 py-3 text-center font-bold border-b-2 border-spooky-orange text-spooky-orange";
+                loginBtn.className = "flex-1 py-3 text-center font-bold border-b-2 border-transparent text-gray-400 hover:text-white";
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const pass = document.getElementById('reg-password').value;
+            const confirmPass = document.getElementById('reg-confirm-password').value;
+            const errDiv = document.getElementById('reg-error');
+
+            if (!username) {
+                errDiv.textContent = 'Введите никнейм';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            if (pass !== confirmPass) {
+                errDiv.textContent = 'Пароли не совпадают!';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            const existing = localStorage.getItem(getUserStorageKey(username));
+            if (existing) {
+                errDiv.textContent = 'Никнейм уже занят!';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Create User
+            currentUser = {
+                username: username,
+                password: pass, // Local demo auth
+                pumpkins: 30,
+                crystals: 50,
+                inventory: [],
+                lastFreeClaim: 0
+            };
+            
+            saveUserData();
+            localStorage.setItem('egg_drop_active_session', username);
+            closeModal('auth-modal');
+            updateUI();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const errDiv = document.getElementById('login-error');
+
+            const rawData = localStorage.getItem(getUserStorageKey(username));
+            if (!rawData) {
+                errDiv.textContent = 'Пользователь не найден!';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            const data = JSON.parse(rawData);
+            if (data.password && data.password !== pass) {
+                errDiv.textContent = 'Неверный пароль!';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            currentUser = data;
+            localStorage.setItem('egg_drop_active_session', username);
+            closeModal('auth-modal');
+            updateUI();
+        }
+
+        function logout() {
+            localStorage.removeItem('egg_drop_active_session');
+            currentUser = null;
+            updateUI();
+        }
+
+        /* ==========================================================================
+           5. ROULETTE & CASE OPENING ANIMATION
+           ========================================================================== */
+        
+        function openCase(caseId) {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+
+            if (isSpinning) return;
+
+            const caseData = CASES[caseId];
+            if (!caseData) return;
+
+            // Check currency
+            if (caseData.costType === 'pumpkins') {
+                if (currentUser.pumpkins < caseData.cost) {
+                    alert('Недостаточно Тыкв! Воспользуйтесь кнопкой "+" вверху.');
+                    return;
+                }
+                currentUser.pumpkins -= caseData.cost;
+            } else if (caseData.costType === 'crystals') {
+                if (currentUser.crystals < caseData.cost) {
+                    alert('Недостаточно Кристаллов! Воспользуйтесь кнопкой "+" вверху.');
+                    return;
+                }
+                currentUser.crystals -= caseData.cost;
+            } else if (caseData.costType === 'free') {
+                const now = Date.now();
+                if (now - currentUser.lastFreeClaim < 24 * 60 * 60 * 1000) {
+                    alert('Бесплатный кейс доступен раз в 24 часа!');
+                    return;
+                }
+                currentUser.lastFreeClaim = now;
+            }
+
+            saveUserData();
+            updateUI();
+
+            // Prepare Roulette UI
+            const modal = document.getElementById('roulette-modal');
+            const track = document.getElementById('roulette-track');
+            const resultArea = document.getElementById('roulette-result-area');
+            const caseTitle = document.getElementById('roulette-case-title');
+
+            caseTitle.textContent = caseData.name;
+            resultArea.classList.add('opacity-0', 'scale-90');
+            modal.classList.remove('hidden');
+            isSpinning = true;
+
+            // Generate 60 items for smooth spin reel
+            track.replaceChildren(); // Clear existing children safely
+            const totalCards = 60;
+            const winningIndex = 48; // Target card index
+            
+            // Choose winner item
+            const winnerItem = caseData.pool[Math.floor(Math.random() * caseData.pool.length)];
+
+            const itemWidth = 120; // 120px width per card
+            
+            for (let i = 0; i < totalCards; i++) {
+                let item = (i === winningIndex) ? winnerItem : caseData.pool[Math.floor(Math.random() * caseData.pool.length)];
+                
+                const card = document.createElement('div');
+                card.className = `w-[110px] h-[130px] mx-[5px] flex-shrink-0 ${RARITY_COLORS[item.rarity].bg} border ${RARITY_COLORS[item.rarity].border} rounded-xl flex flex-col items-center justify-center p-2 text-center space-y-2 shadow-md`;
+                card.innerHTML = `
+                    <i class="fa-solid ${item.icon} text-3xl" style="color: ${item.color}"></i>
+                    <span class="text-[10px] font-bold text-white line-clamp-2">${item.name}</span>
+                    <span class="text-[9px] ${RARITY_COLORS[item.rarity].text} font-semibold">${RARITY_COLORS[item.rarity].name}</span>
+                `;
+                track.appendChild(card);
+            }
+
+            // Reset track position
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+
+            // Trigger Animation
+            setTimeout(() => {
+                const containerWidth = document.querySelector('.roulette-container').offsetWidth;
+                // Target position offset to center the winning card under pointer
+                const targetPos = (winningIndex * itemWidth) - (containerWidth / 2) + (itemWidth / 2) + (Math.random() * 40 - 20);
+
+                track.style.transition = 'transform 6s cubic-bezier(0.1, 0.9, 0.1, 1)';
+                track.style.transform = `translateX(-${targetPos}px)`;
+
+                // Tick Sound Interval Simulator
+                let tickCount = 0;
+                const interval = setInterval(() => {
+                    if (tickCount < 30) {
+                        playSound('tick');
+                        tickCount++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 150);
+
+                // On Spin End
+                setTimeout(() => {
+                    isSpinning = false;
+                    playSound('win');
+                    
+                    // Add item to inventory
+                    currentUser.inventory.push({
+                        ...winnerItem,
+                        obtainedAt: Date.now()
+                    });
+                    saveUserData();
+                    updateUI();
+
+                    // Display Winner Text
+                    document.getElementById('won-item-name').textContent = winnerItem.name;
+                    document.getElementById('won-item-name').style.color = winnerItem.color;
+                    document.getElementById('won-item-value').textContent = `Продажная стоимость: ${winnerItem.price} ${winnerItem.currency === 'pumpkins' ? 'Тыкв' : 'Кристаллов'}`;
+                    
+                    resultArea.classList.remove('opacity-0', 'scale-90');
+                }, 6200);
+
+            }, 50);
+        }
+
+        function closeRouletteModal() {
+            if (isSpinning) return;
+            document.getElementById('roulette-modal').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           6. INVENTORY & SELLING SYSTEM
+           ========================================================================== */
+        
+        function openInventoryModal() {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+            renderInventory();
+            document.getElementById('inventory-modal').classList.remove('hidden');
+        }
+
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            grid.replaceChildren(); // Clear existing children safely
+
+            if (!currentUser || !currentUser.inventory || currentUser.inventory.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-500">
+                        <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                        <p>Ваш инвентарь пуст. Откройте кейсы!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            currentUser.inventory.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = `bg-spooky-bg border ${RARITY_COLORS[item.rarity].border} rounded-xl p-3 flex flex-col items-center justify-between text-center relative group hover:scale-[1.02] transition`;
+                
+                card.innerHTML = `
+                    <div class="space-y-1 my-2">
+                        <i class="fa-solid ${item.icon} text-3xl" style="color: ${item.color}"></i>
+                        <div class="text-xs font-bold text-white leading-tight">${item.name}</div>
+                        <div class="text-[10px] ${RARITY_COLORS[item.rarity].text}">${RARITY_COLORS[item.rarity].name}</div>
+                    </div>
+                    <button onclick="sellItem(${index})" class="w-full mt-2 py-1 bg-red-950/40 hover:bg-red-900/60 border border-red-500/30 text-red-400 text-xs rounded-lg transition flex items-center justify-center gap-1">
+                        <span>Продать за ${item.price}</span>
+                        <i class="fa-solid ${item.currency === 'pumpkins' ? 'fa-pumpkin text-spooky-orange' : 'fa-gem text-cyan-400'}"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function sellItem(index) {
+            if (!currentUser || !currentUser.inventory[index]) return;
+
+            const item = currentUser.inventory[index];
+            if (item.currency === 'pumpkins') {
+                currentUser.pumpkins += item.price;
+            } else {
+                currentUser.crystals += item.price;
+            }
+
+            currentUser.inventory.splice(index, 1);
+            saveUserData();
+            updateUI();
+            renderInventory();
+        }
+
+        /* ==========================================================================
+           7. UI HELPERS & TIMERS
+           ========================================================================== */
+        
+        function updateUI() {
+            const profileArea = document.getElementById('user-profile-area');
+
+            if (currentUser) {
+                // Display user info
+                document.getElementById('balance-pumpkins').textContent = currentUser.pumpkins;
+                document.getElementById('balance-crystals').textContent = currentUser.crystals;
+                document.getElementById('inventory-count-badge').textContent = currentUser.inventory ? currentUser.inventory.length : 0;
+
+                profileArea.innerHTML = `
+                    <div class="flex items-center gap-2 bg-spooky-card border border-spooky-cardBorder px-3 py-1.5 rounded-xl">
+                        <i class="fa-solid fa-user-ninja text-spooky-purple"></i>
+                        <span class="text-sm font-bold text-white">${currentUser.username}</span>
+                        <button onclick="logout()" class="ml-2 text-xs text-gray-400 hover:text-red-400" title="Выйти">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('balance-pumpkins').textContent = '0';
+                document.getElementById('balance-crystals').textContent = '0';
+                document.getElementById('inventory-count-badge').textContent = '0';
+
+                profileArea.innerHTML = `
+                    <button onclick="openAuthModal()" class="px-4 py-2 bg-spooky-orange hover:bg-orange-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-orange-950/40">
+                        Войти / Регистрация
+                    </button>
+                `;
+            }
+
+            checkFreeCaseAvailability();
+        }
+
+        function openBonusModal() {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+            document.getElementById('bonus-modal').classList.remove('hidden');
+        }
+
+        function addCurrency(pumpkins, crystals) {
+            if (!currentUser) return;
+            currentUser.pumpkins += pumpkins;
+            currentUser.crystals += crystals;
+            saveUserData();
+            updateUI();
+            closeModal('bonus-modal');
+        }
+
+        function checkFreeCaseAvailability() {
+            const statusLabel = document.getElementById('free-case-timer-status');
+            const freeBtn = document.getElementById('btn-claim-free');
+
+            if (!currentUser) {
+                statusLabel.textContent = "Требуется авторизация";
+                return;
+            }
+
+            const now = Date.now();
+            const diff = now - (currentUser.lastFreeClaim || 0);
+            const cooldown = 24 * 60 * 60 * 1000;
+
+            if (diff < cooldown) {
+                const remaining = cooldown - diff;
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                statusLabel.textContent = `Доступно через ${hours} ч. ${minutes} мин.`;
+                freeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                statusLabel.textContent = "Доступно прямо сейчас!";
+                freeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // 20-Day Halloween Countdown Timer Simulation
+        function initEventTimer() {
+            const timerElem = document.getElementById('event-timer');
+            // 20 days target
+            let endTime = localStorage.getItem('egg_drop_event_end');
+            if (!endTime) {
+                endTime = Date.now() + (20 * 24 * 60 * 60 * 1000);
+                localStorage.setItem('egg_drop_event_end', endTime);
+            } else {
+                endTime = parseInt(endTime);
+            }
+
+            setInterval(() => {
+                const now = Date.now();
+                const dist = endTime - now;
+                if (dist < 0) {
+                    timerElem.textContent = "Ивент Завершен";
+                    return;
+                }
+
+                const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+
+                timerElem.textContent = `${days} дн. ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
